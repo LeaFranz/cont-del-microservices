@@ -186,3 +186,163 @@ func TestDeleteProduct(t *testing.T) {
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)
 }
+
+func TestGetMostExpensiveProducts(t *testing.T) {
+	clearTable()
+
+	// 2 products with different prices
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod2", 50.0)
+
+	req, _ := http.NewRequest("GET", "/expensive_products", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 1 {
+		t.Errorf("Expected 1 most expensive product. Got %v", len(m))
+	}
+
+	if m[0].Name != "Product prod2" {
+		t.Errorf("Expected 'prod2' as most expensive product. Got '%v'", m[0].Name)
+	}
+}
+
+func TestGetMultipleMostExpensiveProducts(t *testing.T) {
+	clearTable()
+
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod2", 50.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod3", 50.0)
+
+	req, _ := http.NewRequest("GET", "/expensive_products", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 2 {
+		t.Errorf("Expected 2 most expensive product. Got %v", len(m))
+	}
+
+	if m[0].Name != "Product prod2" {
+		t.Errorf("Expected 'prod2' as one of the most expensive products. Got '%v'", m[0].Name)
+	}
+
+	if m[1].Name != "Product prod3" {
+		t.Errorf("Expected 'prod3' as one of the most expensive products. Got '%v'", m[1].Name)
+	}
+}
+
+func TestGetCheapestProducts(t *testing.T) {
+	clearTable()
+
+	// 2 products with different prices
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod2", 50.0)
+
+	req, _ := http.NewRequest("GET", "/cheapest_products", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 1 {
+		t.Errorf("Expected 1 cheapest products. Got %v", len(m))
+	}
+
+	if m[0].Name != "Product prod1" {
+		t.Errorf("Expected 'prod1' as the cheapest product. Got '%v'", m[0].Name)
+	}
+}
+
+func TestGetMultipleCheapestProducts(t *testing.T) {
+	clearTable()
+
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod2", 50.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod3", 2.0)
+
+	req, _ := http.NewRequest("GET", "/cheapest_products", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 2 {
+		t.Errorf("Expected 2 most expensive products. Got %v", len(m))
+	}
+
+	if m[0].Name != "Product prod1" {
+		t.Errorf("Expected 'prod1' as one of the first cheapest products. Got '%v'", m[0].Name)
+	}
+
+	if m[1].Name != "Product prod3" {
+		t.Errorf("Expected 'prod3' as one of the second cheapest products. Got '%v'", m[1].Name)
+	}
+}
+
+func TestGetProductByName(t *testing.T) {
+	clearTable()
+
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+"prod2", 50.0)
+
+	req, _ := http.NewRequest("GET", "/products_by_name/Prod1", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 1 {
+		t.Errorf("Expected 1 product with the name 'Prod1'. Got %v", len(m))
+	}
+
+	if m[0].Name != "Prod1" {
+		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+	}
+}
+
+func TestGetProductsByName(t *testing.T) {
+	clearTable()
+
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Prod1", 2.0)
+	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Prod1", 50.0)
+
+	req, _ := http.NewRequest("GET", "/products_by_name/Prod1", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m []product
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if len(m) != 2 {
+		t.Errorf("Expected 2 products with the name 'Prod1'. Got %v", len(m))
+	}
+
+	if m[0].Name != "Prod1" {
+		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+	}
+	if m[0].Price != 2.0 {
+		t.Errorf("Expected product 1 with price 2.0. Got '%v'", m[0].Price)
+	}
+
+	if m[1].Name != "Prod1" {
+		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+	}
+	if m[1].Price != 50.0 {
+		t.Errorf("Expected product 2 with price 50.0. Got '%v'", m[1].Price)
+	}
+}

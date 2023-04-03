@@ -66,3 +66,75 @@ func getProducts(db *sql.DB, start, count int) ([]product, error) {
 
 	return products, nil
 }
+
+func getExpensiveProducts(db *sql.DB, start, count int) ([]product, error) {
+	rows, err := db.Query(
+		"SELECT id, name,  price FROM products WHERE price = ( SELECT MAX(price) from products) ORDER BY id ASC LIMIT $1 OFFSET $2",
+		count, start)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	products := []product{}
+
+	for rows.Next() {
+		var p product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}
+
+func getCheapestProducts(db *sql.DB, start, count int) ([]product, error) {
+	rows, err := db.Query(
+		"SELECT id, name,  price FROM products WHERE price = ( SELECT MIN(price) from products) ORDER BY id ASC LIMIT $1 OFFSET $2",
+		count, start)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	products := []product{}
+
+	for rows.Next() {
+		var p product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}
+
+func getProductsByName(db *sql.DB, start, count int, name string) ([]product, error) {
+	rows, err := db.Query(
+		"SELECT id, name,  price FROM products WHERE name=$3 LIMIT $1 OFFSET $2",
+		count, start, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	products := []product{}
+
+	for rows.Next() {
+		var p product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
+}

@@ -11,5 +11,6 @@ Additional features:
 ## Exercise 3: Continuous Integration Workflow
 Continuous Integration Workflow with GitHub Actions
 
-![go workflow](https://github.com/LeaFranz/cont-del-microservices/blob/main/.github/workflows/go.yml/badge.svg)
+[![Build and Test](https://github.com/LeaFranz/cont-del-microservices/actions/workflows/go.yml/badge.svg)](https://github.com/LeaFranz/cont-del-microservicesp/actions/workflows/ci.yml)
+
 

@@ -310,12 +310,14 @@ func TestGetProductByName(t *testing.T) {
 	}
 
 	if m[0].Name != "Prod1" {
-		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+		t.Errorf("Expected product with name 'Prod1'.  Got '%v'", m[0].Name)
 	}
 }
 
 func TestGetProductsByName(t *testing.T) {
 	clearTable()
+
+	const error_output = "Expected product with name 'Prod1'. Got '%v'"
 
 	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Prod1", 2.0)
 	a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Prod1", 50.0)
@@ -333,14 +335,14 @@ func TestGetProductsByName(t *testing.T) {
 	}
 
 	if m[0].Name != "Prod1" {
-		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+		t.Errorf(error_output, m[0].Name)
 	}
 	if m[0].Price != 2.0 {
 		t.Errorf("Expected product 1 with price 2.0. Got '%v'", m[0].Price)
 	}
 
 	if m[1].Name != "Prod1" {
-		t.Errorf("Expected product with name 'Prod1'. Got '%v'", m[0].Name)
+		t.Errorf(error_output, m[0].Name)
 	}
 	if m[1].Price != 50.0 {
 		t.Errorf("Expected product 2 with price 50.0. Got '%v'", m[1].Price)

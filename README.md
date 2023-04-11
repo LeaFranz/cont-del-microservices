@@ -9,4 +9,7 @@ Additional features:
 - get products by name
 
 ## Exercise 3: Continuous Integration Workflow
-Continuous Integration Workflow with GitHub Actiosn
+Continuous Integration Workflow with GitHub Actions
+
+![go workflow](https://github.com/LeaFranz/cont-del-microservices/blob/main/.github/workflows/go.yml/badge.svg)
+

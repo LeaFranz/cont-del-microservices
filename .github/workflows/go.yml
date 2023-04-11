@@ -21,6 +21,9 @@ jobs:
           APP_DB_USERNAME: postgres
           APP_DB_PASSWORD: cont_del
           APP_DB_NAME: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: cont_del
+          POSTGRES_DB: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -45,6 +48,9 @@ jobs:
         APP_DB_USERNAME: postgres
         APP_DB_PASSWORD: cont_del
         APP_DB_NAME: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: cont_del
+        POSTGRES_DB: postgres
       run: go test -v ./...
 
     - name: Build

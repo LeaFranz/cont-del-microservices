@@ -52,7 +52,7 @@ Added a go.yml file with the default format for Go from Github and adapted it to
 
 ### Static code analysis
 
-Sonar cloud was integrated for the static code analysis.
+Sonar cloud was integrated for the static code analysis. Arguments were added in a separate properties file.
 
 ```yml
   sonarcloud:
@@ -67,11 +67,4 @@ Sonar cloud was integrated for the static code analysis.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=LeaFranz_cont-del-microservices
-          -Dsonar.organization=leafranz
-          -Dsonar.sources=.
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 ```
